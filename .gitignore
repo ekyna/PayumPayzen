@@ -1,0 +1,5 @@
+Thumbs.db
+ehthumbs.db
+.DS_Store
+vendor
+composer.lock

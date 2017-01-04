@@ -1,0 +1,26 @@
+{
+    "name" : "ekyna/payum-payzen",
+    "description" : "PayZen Payum gateway",
+    "type" : "component",
+    "authors" : [{
+            "name" : "Etienne Dauvergne",
+            "homepage" : "http://ekyna.com"
+        }
+    ],
+    "homepage" : "https://github.com/ekyna/Payum/Payzen",
+    "license" : [
+        "MIT"
+    ],
+    "require" : {
+        "php" : ">=5.4",
+        "payum/payum": "~1.3",
+        "php-http/guzzle6-adapter": "^1.1",
+        "symfony/process": "~2.7|~3.0",
+        "psr/log": "~1.0"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "Ekyna\\Component\\Payum\\Payzen\\" : ""
+        }
+    }
+}
