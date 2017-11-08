@@ -56,6 +56,7 @@ class PayzenGatewayFactory extends GatewayFactory
                 'site_id'     => null,
                 'certificate' => null,
                 'ctx_mode'    => null,
+                'debug'       => false,
             ], $apiConfig);
 
             $requiredOptions[] = 'api';
@@ -63,7 +64,7 @@ class PayzenGatewayFactory extends GatewayFactory
             $config['payum.api'] = function (ArrayObject $config) {
                 $config->validateNotEmpty($config['payum.required_options']);
 
-                $api = new Api\Api(); // TODO logger
+                $api = new Api\Api();
                 $api->setConfig($config['api']);
 
                 return $api;

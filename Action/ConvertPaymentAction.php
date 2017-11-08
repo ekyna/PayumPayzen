@@ -42,8 +42,8 @@ class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
             }
             $divisor = pow(10, 2 - $currency->exp);
 
-            $model['vads_currency'] = $currency->numeric;
-            $model['vads_amount'] = abs($payment->getTotalAmount() / $divisor);
+            $model['vads_currency'] = (string)$currency->numeric;
+            $model['vads_amount'] = (string)abs($payment->getTotalAmount() / $divisor);
         }
 
         if (false == $model['vads_order_id']) {

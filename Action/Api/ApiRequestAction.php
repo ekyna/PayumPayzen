@@ -33,9 +33,33 @@ class ApiRequestAction extends AbstractApiAction
         $model['vads_trans_id'] = $this->api->getTransactionId();
         $model['vads_trans_date'] = date('YmdHis');
 
-        $url = $this->api->createRequestUrl($model->getArrayCopy());
+        $data = $model->getArrayCopy();
+
+        $this->logRequestData($data);
+
+        $url = $this->api->createRequestUrl($data);
 
         throw new HttpRedirect($url);
+    }
+
+    /**
+     * Logs the request data.
+     *
+     * @param array $data
+     */
+    private function logRequestData(array $data)
+    {
+        $this->logData("[Payzen] Request", $data, [
+            'vads_order_id',
+            'vads_amount',
+            'vads_ctx_mode',
+            'vads_currency',
+            'vads_payment_config',
+            'vads_site_id',
+            'vads_trans_date',
+            'vads_trans_id',
+            'vads_version',
+        ]);
     }
 
     /**

@@ -4,8 +4,6 @@ namespace Ekyna\Component\Payum\Payzen\Api;
 
 use Payum\Core\Exception\LogicException;
 use Payum\Core\Exception\RuntimeException;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -31,21 +29,6 @@ class Api
      */
     private $config;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-
-    /**
-     * Constructor
-     *
-     * @param LoggerInterface $logger
-     */
-    public function __construct(LoggerInterface $logger = null)
-    {
-        $this->logger = $logger ?: new NullLogger();
-    }
 
     /**
      * Configures the api.
@@ -66,25 +49,19 @@ class Api
      */
     public function getTransactionId()
     {
-        $path = $this->config['trans_id_file_path'];
-
-        // Create directory if not exists
-        if (!is_dir(dirname($path))) {
-            mkdir(dirname($path), 0777, true);
-        }
+        $path = $this->getDirectoryPath() . 'transaction_id';
 
         // Create file if not exists
         if (!file_exists($path)) {
             touch($path);
         }
 
-        $id = 1;
         $date = (new \DateTime())->format('Ymd');
         $fileDate = date('Ymd', filemtime($path));
         $isDailyFirstAccess = ($date != $fileDate);
 
         // Open file
-        $handle = fopen($this->config['trans_id_file_path'], 'r+');
+        $handle = fopen($path, 'r+');
         if (false === $handle) {
             throw new RuntimeException('Failed to open the transaction ID file.');
         }
@@ -93,6 +70,7 @@ class Api
             throw new RuntimeException('Failed to lock the transaction ID file.');
         }
 
+        $id = 1;
         // If not daily first access, read and increment the id
         if (!$isDailyFirstAccess) {
             $id = (int)fread($handle, 6);
@@ -107,9 +85,12 @@ class Api
         flock($handle, LOCK_UN);
         fclose($handle);
 
+        if ($this->config['debug']) {
+            $id += 89000;
+        }
+
         return str_pad($id, 6, '0', STR_PAD_LEFT);
     }
-
 
     /**
      * Creates the request url.
@@ -144,13 +125,39 @@ class Api
         return $data;
     }
 
-    public function checkResponseSignature(array $data)
+    /**
+     * Checks the response signature.
+     *
+     * @param array $data
+     *
+     * @return bool
+     */
+    public function checkResponseIntegrity(array $data)
     {
         if (!isset($data['signature'])) {
             return false;
         }
 
-        return $data['signature'] === $this->generateSignature($data);
+        return $data['vads_site_id'] === (string)$this->config['site_id']
+            && $data['vads_ctx_mode'] === (string)$this->config['ctx_mode']
+            && $data['signature'] === $this->generateSignature($data);
+    }
+
+    /**
+     * Returns the directory path and creates it if not exists.
+     *
+     * @return string
+     */
+    private function getDirectoryPath()
+    {
+        $path = $this->config['directory'];
+
+        // Create directory if not exists
+        if (!is_dir(dirname($path))) {
+            mkdir(dirname($path), 0700, true);
+        }
+
+        return $path . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -176,21 +183,17 @@ class Api
     {
         $data = $this
             ->getRequestOptionsResolver()
-            ->resolve(array_replace(
-                [
-                    'vads_site_id'  => $this->config['site_id'],
-                    'vads_ctx_mode' => $this->config['ctx_mode'],
-                ],
-                $data,
-                [
-                    'vads_page_action' => 'PAYMENT',
-                    'vads_version'     => 'V2',
-                ]
-            ));
+            ->resolve(array_replace($data, [
+                'vads_page_action' => 'PAYMENT',
+                'vads_version'     => 'V2',
+            ]));
 
         $data = array_filter($data, function ($value) {
             return null !== $value;
         });
+
+        $data['vads_site_id'] = $this->config['site_id'];
+        $data['vads_ctx_mode'] = $this->config['ctx_mode'];
 
         $data['signature'] = $this->generateSignature($data);
 
@@ -249,12 +252,17 @@ class Api
                 'site_id',
                 'certificate',
                 'ctx_mode',
-                'trans_id_file_path',
+                'directory',
+                'debug',
             ])
-            ->setAllowedTypes('site_id', ['string', 'int'])
-            ->setAllowedTypes('certificate', ['string', 'int'])
-            ->setAllowedTypes('trans_id_file_path', 'string')
-            ->setAllowedValues('ctx_mode', ['TEST', 'PRODUCTION']);
+            ->setAllowedTypes('site_id', 'string')
+            ->setAllowedTypes('certificate', 'string')
+            ->setAllowedValues('ctx_mode', ['TEST', 'PRODUCTION'])
+            ->setAllowedTypes('directory', 'string')
+            ->setAllowedTypes('debug', 'bool')
+            ->setNormalizer('directory', function (Options $options, $value) {
+                return rtrim($value, DIRECTORY_SEPARATOR);
+            });
 
         return $this->configResolver = $resolver;
     }
@@ -362,16 +370,13 @@ class Api
             ])
             ->setRequired([
                 'vads_amount',
-                'vads_ctx_mode',
                 'vads_currency',
                 'vads_payment_config',
-                'vads_site_id',
                 'vads_trans_date',
                 'vads_trans_id',
                 'vads_version',
             ])
             ->setAllowedValues('vads_action_mode', ['SILENT', 'INTERACTIVE'])
-            ->setAllowedValues('vads_ctx_mode', ['TEST', 'PRODUCTION'])
             ->setAllowedValues('vads_currency', $this->getCurrencyCodes())
             ->setAllowedValues('vads_language', $this->getLanguageCodes())
             ->setAllowedValues('vads_page_action', 'PAYMENT')

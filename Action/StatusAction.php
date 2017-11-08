@@ -31,7 +31,7 @@ class StatusAction implements ActionInterface
             return;
         }
 
-        if (false != $code = $model['vads_auth_result']) {
+        if (false != $code = $model['vads_result']) {
             switch ($code) {
                 case "00" : // transaction approuvée ou traitée avec succès
                     $request->markCaptured();
@@ -88,7 +88,7 @@ class StatusAction implements ActionInterface
             return;
         }
 
-        $request->markPending();
+        $request->markNew();
     }
 
     /**
