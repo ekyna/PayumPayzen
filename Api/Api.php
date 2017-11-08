@@ -155,7 +155,7 @@ class Api
 
         // Create directory if not exists
         if (!is_dir($path)) {
-            mkdir($path, 0600, true);
+            mkdir($path, 0755, true);
         }
 
         return $path . DIRECTORY_SEPARATOR;
