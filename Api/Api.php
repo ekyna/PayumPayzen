@@ -54,6 +54,7 @@ class Api
         // Create file if not exists
         if (!file_exists($path)) {
             touch($path);
+            chmod($path, 0600);
         }
 
         $date = (new \DateTime())->format('Ymd');
@@ -153,8 +154,8 @@ class Api
         $path = $this->config['directory'];
 
         // Create directory if not exists
-        if (!is_dir(dirname($path))) {
-            mkdir(dirname($path), 0700, true);
+        if (!is_dir($path)) {
+            mkdir($path, 0600, true);
         }
 
         return $path . DIRECTORY_SEPARATOR;
