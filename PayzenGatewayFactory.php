@@ -44,6 +44,7 @@ class PayzenGatewayFactory extends GatewayFactory
             'payum.action.api_request'     => new Action\Api\ApiRequestAction(),
             'payum.action.api_response'    => new Action\Api\ApiResponseAction(),
             'payum.action.sync'            => new Action\SyncAction(),
+            'payum.action.refund'          => new Action\RefundAction(),
             'payum.action.status'          => new Action\StatusAction(),
         ]);
 

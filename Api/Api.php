@@ -80,7 +80,8 @@ class Api
 
         $id = 1;
         $date = (new \DateTime())->format('Ymd');
-        $isDailyFirstAccess = ($date != date('Ymd', fileatime($path)));
+        $fileDate = date('Ymd', filemtime($path));
+        $isDailyFirstAccess = ($date != $fileDate);
 
         // Open file
         $handle = fopen($this->config['trans_id_file_path'], 'r+');

@@ -31,10 +31,8 @@ class StatusAction implements ActionInterface
             return;
         }
 
-
-
-        if (false != $responseCode = $model['vads_auth_result']) {
-            switch ($responseCode) {
+        if (false != $code = $model['vads_auth_result']) {
+            switch ($code) {
                 case "00" : // transaction approuvée ou traitée avec succès
                     $request->markCaptured();
                     break;
@@ -79,6 +77,12 @@ class StatusAction implements ActionInterface
                     break;
                 default :
                     $request->markUnknown();
+            }
+
+            if ($request->isCaptured() && false != $code = $model['state_override']) {
+                if ($code == 'refunded') {
+                    $request->markRefunded();
+                }
             }
 
             return;
