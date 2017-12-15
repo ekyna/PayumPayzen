@@ -21,6 +21,8 @@ class SyncAction implements ActionInterface, GatewayAwareInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @param Sync $request
      */
     public function execute($request)
     {

@@ -115,14 +115,30 @@ class Api
     }
 
     /**
-     * Parse the response data.
+     * Creates the request data.
      *
      * @param array $data
      *
      * @return array
      */
-    public function parseResponseData(array $data)
+    public function createRequestData(array $data)
     {
+        $data = $this
+            ->getRequestOptionsResolver()
+            ->resolve(array_replace($data, [
+                'vads_page_action' => 'PAYMENT',
+                'vads_version'     => 'V2',
+            ]));
+
+        $data = array_filter($data, function ($value) {
+            return null !== $value;
+        });
+
+        $data['vads_site_id'] = $this->config['site_id'];
+        $data['vads_ctx_mode'] = $this->config['ctx_mode'];
+
+        $data['signature'] = $this->generateSignature($data);
+
         return $data;
     }
 
@@ -142,6 +158,29 @@ class Api
         return $data['vads_site_id'] === (string)$this->config['site_id']
             && $data['vads_ctx_mode'] === (string)$this->config['ctx_mode']
             && $data['signature'] === $this->generateSignature($data);
+    }
+
+    /**
+     * Generates the signature.
+     *
+     * @param array $data
+     * @param bool  $hashed
+     *
+     * @return string
+     */
+    public function generateSignature(array $data, $hashed = true)
+    {
+        ksort($data);
+
+        $content = "";
+        foreach ($data as $key => $value) {
+            if (substr($key, 0, 5) == 'vads_') {
+                $content .= $value . '+';
+            }
+        }
+        $content .= $this->config['certificate'];
+
+        return $hashed ? sha1($content) : $content;
     }
 
     /**
@@ -171,57 +210,6 @@ class Api
     private function getEndpoint()
     {
         return 'https://paiement.systempay.fr/vads-payment/';
-    }
-
-    /**
-     * Creates the request data.
-     *
-     * @param array $data
-     *
-     * @return array
-     */
-    private function createRequestData(array $data)
-    {
-        $data = $this
-            ->getRequestOptionsResolver()
-            ->resolve(array_replace($data, [
-                'vads_page_action' => 'PAYMENT',
-                'vads_version'     => 'V2',
-            ]));
-
-        $data = array_filter($data, function ($value) {
-            return null !== $value;
-        });
-
-        $data['vads_site_id'] = $this->config['site_id'];
-        $data['vads_ctx_mode'] = $this->config['ctx_mode'];
-
-        $data['signature'] = $this->generateSignature($data);
-
-        return $data;
-    }
-
-    /**
-     * Generates the signature.
-     *
-     * @param array $data
-     * @param bool  $hashed
-     *
-     * @return string
-     */
-    private function generateSignature(array $data, $hashed = true)
-    {
-        ksort($data);
-
-        $content = "";
-        foreach ($data as $key => $value) {
-            if (substr($key, 0, 5) == 'vads_') {
-                $content .= $value . '+';
-            }
-        }
-        $content .= $this->config['certificate'];
-
-        return $hashed ? sha1($content) : $content;
     }
 
     /**
