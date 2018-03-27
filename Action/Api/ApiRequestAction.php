@@ -31,7 +31,8 @@ class ApiRequestAction extends AbstractApiAction
         }
 
         $model['vads_trans_id'] = $this->api->getTransactionId();
-        $model['vads_trans_date'] = date('YmdHis');
+        // Current UTC date time
+        $model['vads_trans_date'] = (new \DateTime('now', new \DateTimeZone('UTC')))->format('YmdHis');
 
         $data = $model->getArrayCopy();
 
