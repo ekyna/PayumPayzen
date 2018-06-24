@@ -6,6 +6,7 @@ use Ekyna\Component\Payum\Payzen\Request\Response;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetHttpRequest;
+
 /**
  * Class ResponseAction
  * @package Ekyna\Component\Payum\Payzen\Action\Api
