@@ -15,7 +15,7 @@
         "php" : ">=5.4",
         "payum/core": "^1.5",
         "php-http/guzzle6-adapter": "^1.1",
-        "symfony/process": "~2.7|~3.0",
+        "symfony/process": "~2.7|~3.0|~4.0",
         "psr/log": "~1.0"
     },
     "autoload" : {
