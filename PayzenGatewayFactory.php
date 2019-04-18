@@ -31,49 +31,51 @@ class PayzenGatewayFactory extends GatewayFactory
      */
     protected function populateConfig(ArrayObject $config)
     {
-        $apiConfig = false != $config['payum.api_config']
-            ? (array)$config['payum.api_config']
-            : [];
-
         $config->defaults([
             'payum.factory_name'  => 'payzen',
             'payum.factory_title' => 'Payzen',
 
             'payum.action.capture'         => new Action\CaptureAction(),
             'payum.action.convert_payment' => new Action\ConvertPaymentAction(),
-            'payum.action.api_request'     => new Action\Api\ApiRequestAction(),
-            'payum.action.api_response'    => new Action\Api\ApiResponseAction(),
             'payum.action.sync'            => new Action\SyncAction(),
             'payum.action.refund'          => new Action\RefundAction(),
             'payum.action.status'          => new Action\StatusAction(),
+            'payum.action.notify'          => new Action\NotifyAction(),
+            'payum.action.api.request'     => new Action\Api\ApiRequestAction(),
+            'payum.action.api.response'    => new Action\Api\ApiResponseAction(),
         ]);
 
-        $defaultOptions = [];
-        $requiredOptions = [];
-
         if (false == $config['payum.api']) {
-            $defaultOptions['api'] = array_replace([
+            $config['payum.default_options'] = [
                 'site_id'     => null,
                 'certificate' => null,
                 'ctx_mode'    => null,
+                'directory'   => null,
+                'endpoint'    => null,
                 'debug'       => false,
-            ], $apiConfig);
+            ];
 
-            $requiredOptions[] = 'api';
+            $config->defaults($config['payum.default_options']);
+
+            $config['payum.required_options'] = ['site_id', 'certificate', 'ctx_mode', 'directory'];
 
             $config['payum.api'] = function (ArrayObject $config) {
                 $config->validateNotEmpty($config['payum.required_options']);
 
+                $payzenConfig = [
+                    'endpoint'    => $config['endpoint'],
+                    'site_id'     => $config['site_id'],
+                    'certificate' => $config['certificate'],
+                    'ctx_mode'    => $config['ctx_mode'],
+                    'directory'   => $config['directory'],
+                    'debug'       => $config['debug'],
+                ];
+
                 $api = new Api\Api();
-                $api->setConfig($config['api']);
+                $api->setConfig($payzenConfig);
 
                 return $api;
             };
         }
-
-        $config['payum.default_options'] = $defaultOptions;
-        $config['payum.required_options'] = $requiredOptions;
-
-        $config->defaults($config['payum.default_options']);
     }
 }

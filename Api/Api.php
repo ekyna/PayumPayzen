@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnusedParameterInspection */
 
 namespace Ekyna\Component\Payum\Payzen\Api;
 
@@ -106,7 +106,7 @@ class Api
 
         $data = $this->createRequestData($data);
 
-        $url = $this->getEndpoint() . '?' .
+        $url = $this->getUrl() . '?' .
             implode('&', array_map(function ($key, $value) {
                 return $key . '=' . rawurlencode($value);
             }, array_keys($data), $data));
@@ -178,9 +178,14 @@ class Api
                 $content .= $value . '+';
             }
         }
+
         $content .= $this->config['certificate'];
 
-        return $hashed ? sha1($content) : $content;
+        if ($hashed) {
+            return $this->hash($content);
+        }
+
+        return $content;
     }
 
     /**
@@ -198,18 +203,6 @@ class Api
         }
 
         return $path . DIRECTORY_SEPARATOR;
-    }
-
-    /**
-     * Returns the endpoint url.
-     *
-     * @return string
-     *
-     * @throws \Exception
-     */
-    private function getEndpoint()
-    {
-        return 'https://paiement.systempay.fr/vads-payment/';
     }
 
     /**
@@ -242,12 +235,16 @@ class Api
                 'certificate',
                 'ctx_mode',
                 'directory',
-                'debug',
+            ])
+            ->setDefaults([
+                'endpoint' => null,
+                'debug'    => false,
             ])
             ->setAllowedTypes('site_id', 'string')
             ->setAllowedTypes('certificate', 'string')
             ->setAllowedValues('ctx_mode', ['TEST', 'PRODUCTION'])
             ->setAllowedTypes('directory', 'string')
+            ->setAllowedValues('endpoint', $this->getEndPoints())
             ->setAllowedTypes('debug', 'bool')
             ->setNormalizer('directory', function (Options $options, $value) {
                 return rtrim($value, DIRECTORY_SEPARATOR);
@@ -435,21 +432,43 @@ class Api
     {
         return [
             null,
-            'AMEX', // American Express
+            'AMEX',         // American Express
             'AURORE-MULTI', // Aurore
-            'BUYSTER', // Buyster
-            'CB', // CB
-            'COFINOGA', // Cofinoga
+            'BUYSTER',      // Buyster
+            'CB',           // CB
+            'COFINOGA',     // Cofinoga
             'E-CARTEBLEUE', // E-Carte bleue
-            'MASTERCARD', // Eurocard / Mastercard
-            'JCB', // JCB
-            'MAESTRO', // Maestro
-            'ONEY', // Oney
+            'MASTERCARD',   // Eurocard / Mastercard
+            'JCB',          // JCB
+            'MAESTRO',      // Maestro
+            'ONEY',         // Oney
             'ONEY_SANDBOX', // Oney (sandbox)
-            'PAYPAL', // Paypal
-            'PAYPAL_SB', // Paypal (sandbox)
-            'PAYSAFECARD', // Paysafe card
-            'VISA', // Visa
+            'PAYPAL',       // Paypal
+            'PAYPAL_SB',    // Paypal (sandbox)
+            'PAYSAFECARD',  // Paysafe card
+            'VISA',         // Visa
         ];
+    }
+
+    private function getEndPoints()
+    {
+        return [null, 'SYSTEMPAY'];
+    }
+
+    private function getUrl()
+    {
+        if ($this->config['endpoint'] === 'SYSTEMPAY') {
+            return 'https://paiement.systempay.fr/vads-payment/';
+        }
+
+        return 'https://secure.payzen.eu/vads-payment/';
+    }
+
+    private function hash(string $content) {
+        if ($this->config['endpoint'] === 'SYSTEMPAY') {
+            return sha1($content);
+        }
+
+        return base64_encode(hash_hmac('sha256', $content, $this->config['certificate'], true));
     }
 }
