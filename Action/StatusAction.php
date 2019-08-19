@@ -90,6 +90,14 @@ class StatusAction implements ActionInterface
             return;
         }
 
+        if (false != $code = $model['state_override']) {
+            if ($code == 'canceled') {
+                $request->markCanceled();
+
+                return;
+            }
+        }
+
         $request->markNew();
     }
 

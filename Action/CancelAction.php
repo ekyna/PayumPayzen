@@ -8,21 +8,21 @@ use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
-use Payum\Core\Request\Refund;
+use Payum\Core\Request\Cancel;
 
 /**
- * Class CaptureAction
+ * Class CancelAction
  * @package Ekyna\Component\Payum\Payzen\Action
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-class RefundAction implements ActionInterface, GatewayAwareInterface
+class CancelAction implements ActionInterface, GatewayAwareInterface
 {
     use GatewayAwareTrait;
 
     /**
      * {@inheritdoc}
      *
-     * @param Refund $request
+     * @param Cancel $request
      */
     public function execute($request)
     {
@@ -32,8 +32,8 @@ class RefundAction implements ActionInterface, GatewayAwareInterface
 
         $this->gateway->execute($status = new GetHumanStatus($model));
 
-        if ($status->isCaptured()) {
-            $model['state_override'] = 'refunded';
+        if ($status->isNew()) {
+            $model['state_override'] = 'canceled';
         }
     }
 
@@ -42,7 +42,7 @@ class RefundAction implements ActionInterface, GatewayAwareInterface
      */
     public function supports($request)
     {
-        return $request instanceof Refund
+        return $request instanceof Cancel
             && $request->getModel() instanceof \ArrayAccess;
     }
 }
