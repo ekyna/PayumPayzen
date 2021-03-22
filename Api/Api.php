@@ -452,16 +452,19 @@ class Api
 
     private function getEndPoints()
     {
-        return [null, 'SYSTEMPAY'];
+        return [null, 'SYSTEMPAY', 'SCELLIUS'];
     }
 
     private function getUrl()
     {
-        if ($this->config['endpoint'] === 'SYSTEMPAY') {
-            return 'https://paiement.systempay.fr/vads-payment/';
+        switch($this->config['endpoint']) {
+            case 'SYSTEMPAY':
+                return 'https://paiement.systempay.fr/vads-payment/';
+            case 'SCELLIUS':
+                return 'https://scelliuspaiement.labanquepostale.fr/vads-payment/';
+            default:
+                return 'https://secure.payzen.eu/vads-payment/';
         }
-
-        return 'https://secure.payzen.eu/vads-payment/';
     }
 
     private function hash(string $content) {
