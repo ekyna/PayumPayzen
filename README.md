@@ -3,7 +3,7 @@ PayumPayzen
 
 PayZen Payum Gateway (Systempay, Scellius)
 
-[![Build Status][ico-github-actions]][link-github-actions]
+[![Build](https://github.com/ekyna/PayumPayzen/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/ekyna/PayumPayzen/actions/workflows/build.yml)
 
 ## Installation / Configuration
 
