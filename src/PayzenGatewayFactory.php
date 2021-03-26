@@ -17,11 +17,11 @@ class PayzenGatewayFactory extends GatewayFactory
      * Builds a new factory.
      *
      * @param array                   $defaultConfig
-     * @param GatewayFactoryInterface $coreGatewayFactory
+     * @param GatewayFactoryInterface|null $coreGatewayFactory
      *
      * @return PayzenGatewayFactory
      */
-    public static function build(array $defaultConfig, GatewayFactoryInterface $coreGatewayFactory = null)
+    public static function build(array $defaultConfig, GatewayFactoryInterface $coreGatewayFactory = null): PayzenGatewayFactory
     {
         return new static($defaultConfig, $coreGatewayFactory);
     }

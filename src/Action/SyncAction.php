@@ -2,43 +2,44 @@
 
 namespace Ekyna\Component\Payum\Payzen\Action;
 
+use Ekyna\Component\Payum\Payzen\Request\Response;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
-use Payum\Core\Request\Notify;
 use Payum\Core\Request\Sync;
 
 /**
- * Class NotifyAction
+ * Class SyncAction
  * @package Ekyna\Component\Payum\Payzen\Action
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-class NotifyAction implements ActionInterface, GatewayAwareInterface
+class SyncAction implements ActionInterface, GatewayAwareInterface
 {
     use GatewayAwareTrait;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      *
-     * @param Notify $request
-     */
+     * @param Sync $request
+     *
+     * @noinspection PhpMissingParamTypeInspection*/
     public function execute($request)
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        $details = ArrayObject::ensureArrayObject($request->getModel());
+        $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        $this->gateway->execute(new Sync($details));
+        $this->gateway->execute(new Response($model));
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function supports($request)
+    public function supports($request): bool
     {
-        return $request instanceof Notify
+        return $request instanceof Sync
             && $request->getModel() instanceof \ArrayAccess;
     }
 }

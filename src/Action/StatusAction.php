@@ -15,15 +15,14 @@ use Payum\Core\Request\GetStatusInterface;
 class StatusAction implements ActionInterface
 {
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @param GetStatusInterface $request
-     */
+     *
+     * @noinspection PhpMissingParamTypeInspection*/
     public function execute($request)
     {
         RequestNotSupportedException::assertSupports($this, $request);
-
-        /** @var GetStatusInterface $request */
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
@@ -102,9 +101,9 @@ class StatusAction implements ActionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof GetStatusInterface
             && $request->getModel() instanceof \ArrayAccess;

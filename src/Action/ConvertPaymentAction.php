@@ -22,10 +22,11 @@ class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
     use GatewayAwareTrait;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      *
      * @param Convert $request
-     */
+     *
+     * @noinspection PhpMissingParamTypeInspection*/
     public function execute($request)
     {
         RequestNotSupportedException::assertSupports($this, $request);
@@ -60,9 +61,9 @@ class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof Convert
             && $request->getSource() instanceof PaymentInterface

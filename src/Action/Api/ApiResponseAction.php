@@ -15,7 +15,7 @@ use Payum\Core\Request\GetHttpRequest;
 class ApiResponseAction extends AbstractApiAction
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function execute($request)
     {
@@ -71,9 +71,9 @@ class ApiResponseAction extends AbstractApiAction
     }
 
     /**
-     * @inheritdec
+     * @inheritDoc
      */
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof Response
             && $request->getModel() instanceof \ArrayAccess;

@@ -24,16 +24,16 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTo
     use GenericTokenFactoryAwareTrait;
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      *
      * @param Capture $request
-     */
+     *
+     * @noinspection PhpMissingParamTypeInspection*/
     public function execute($request)
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
-
 
         if ($request->getToken()) {
             // Done redirections
@@ -70,9 +70,9 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTo
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof Capture
             && $request->getModel() instanceof \ArrayAccess;

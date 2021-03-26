@@ -14,6 +14,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class Api
 {
+    const MODE_TEST       = 'TEST';
+    const MODE_PRODUCTION = 'PRODUCTION';
+
+    const HASH_MODE_SHA1   = 'SHA1';
+    const HASH_MODE_SHA256 = 'SHA256';
+
+    const ENDPOINT_SYSTEMPAY = 'SYSTEMPAY';
+    const ENDPOINT_SCELLIUS  = 'SCELLIUS';
+
     /**
      * @var OptionsResolver
      */
@@ -47,7 +56,7 @@ class Api
      *
      * @return string
      */
-    public function getTransactionId()
+    public function getTransactionId(): string
     {
         $path = $this->getDirectoryPath() . 'transaction_id';
 
@@ -100,18 +109,16 @@ class Api
      *
      * @return string
      */
-    public function createRequestUrl(array $data)
+    public function createRequestUrl(array $data): string
     {
         $this->ensureApiIsConfigured();
 
         $data = $this->createRequestData($data);
 
-        $url = $this->getUrl() . '?' .
+        return $this->getUrl() . '?' .
             implode('&', array_map(function ($key, $value) {
                 return $key . '=' . rawurlencode($value);
             }, array_keys($data), $data));
-
-        return $url;
     }
 
     /**
@@ -121,7 +128,7 @@ class Api
      *
      * @return array
      */
-    public function createRequestData(array $data)
+    public function createRequestData(array $data): array
     {
         $data = $this
             ->getRequestOptionsResolver()
@@ -149,7 +156,7 @@ class Api
      *
      * @return bool
      */
-    public function checkResponseIntegrity(array $data)
+    public function checkResponseIntegrity(array $data): bool
     {
         if (!isset($data['signature'])) {
             return false;
@@ -168,7 +175,7 @@ class Api
      *
      * @return string
      */
-    public function generateSignature(array $data, $hashed = true)
+    public function generateSignature(array $data, $hashed = true): string
     {
         ksort($data);
 
@@ -193,13 +200,15 @@ class Api
      *
      * @return string
      */
-    private function getDirectoryPath()
+    private function getDirectoryPath(): string
     {
         $path = $this->config['directory'];
 
         // Create directory if not exists
         if (!is_dir($path)) {
-            mkdir($path, 0755, true);
+            if (!mkdir($path, 0755, true)) {
+                throw new RuntimeException('Failed to create cache directory');
+            }
         }
 
         return $path . DIRECTORY_SEPARATOR;
@@ -222,7 +231,7 @@ class Api
      *
      * @return OptionsResolver
      */
-    private function getConfigResolver()
+    private function getConfigResolver(): OptionsResolver
     {
         if (null !== $this->configResolver) {
             return $this->configResolver;
@@ -237,14 +246,16 @@ class Api
                 'directory',
             ])
             ->setDefaults([
-                'endpoint' => null,
-                'debug'    => false,
+                'endpoint'  => null,
+                'hash_mode' => self::HASH_MODE_SHA256,
+                'debug'     => false,
             ])
             ->setAllowedTypes('site_id', 'string')
             ->setAllowedTypes('certificate', 'string')
-            ->setAllowedValues('ctx_mode', ['TEST', 'PRODUCTION'])
+            ->setAllowedValues('ctx_mode', $this->getModes())
             ->setAllowedTypes('directory', 'string')
             ->setAllowedValues('endpoint', $this->getEndPoints())
+            ->setAllowedValues('hash_mode', $this->getHashModes())
             ->setAllowedTypes('debug', 'bool')
             ->setNormalizer('directory', function (Options $options, $value) {
                 return rtrim($value, DIRECTORY_SEPARATOR);
@@ -258,7 +269,7 @@ class Api
      *
      * @return OptionsResolver
      */
-    private function getRequestOptionsResolver()
+    private function getRequestOptionsResolver(): OptionsResolver
     {
         if (null !== $this->requestOptionsResolver) {
             return $this->requestOptionsResolver;
@@ -357,10 +368,8 @@ class Api
             ->setRequired([
                 'vads_amount',
                 'vads_currency',
-                'vads_payment_config',
                 'vads_trans_date',
                 'vads_trans_id',
-                'vads_version',
             ])
             ->setAllowedValues('vads_action_mode', ['SILENT', 'INTERACTIVE'])
             ->setAllowedValues('vads_currency', $this->getCurrencyCodes())
@@ -393,7 +402,7 @@ class Api
         return $this->requestOptionsResolver = $resolver;
     }
 
-    private function getCurrencyCodes()
+    private function getCurrencyCodes(): array
     {
         return [
             '36', // Dollar australien
@@ -412,7 +421,7 @@ class Api
         ];
     }
 
-    private function getLanguageCodes()
+    private function getLanguageCodes(): array
     {
         return [
             null,
@@ -428,7 +437,7 @@ class Api
         ];
     }
 
-    private function getCardsCodes()
+    private function getCardsCodes(): array
     {
         return [
             null,
@@ -450,25 +459,37 @@ class Api
         ];
     }
 
-    private function getEndPoints()
+    private function getModes(): array
     {
-        return [null, 'SYSTEMPAY', 'SCELLIUS'];
+        return [self::MODE_TEST, self::MODE_PRODUCTION];
     }
 
-    private function getUrl()
+    private function getEndPoints(): array
     {
-        switch($this->config['endpoint']) {
-            case 'SYSTEMPAY':
-                return 'https://paiement.systempay.fr/vads-payment/';
-            case 'SCELLIUS':
-                return 'https://scelliuspaiement.labanquepostale.fr/vads-payment/';
-            default:
-                return 'https://secure.payzen.eu/vads-payment/';
+        return [null, self::ENDPOINT_SYSTEMPAY, self::ENDPOINT_SCELLIUS];
+    }
+
+    private function getHashModes(): array
+    {
+        return [self::HASH_MODE_SHA1, self::HASH_MODE_SHA256];
+    }
+
+    private function getUrl(): string
+    {
+        if (self::ENDPOINT_SYSTEMPAY === $this->config['endpoint']) {
+            return 'https://paiement.systempay.fr/vads-payment/';
         }
+
+        if (self::ENDPOINT_SCELLIUS === $this->config['endpoint']) {
+            return 'https://scelliuspaiement.labanquepostale.fr/vads-payment/';
+        }
+
+        return 'https://secure.payzen.eu/vads-payment/';
     }
 
-    private function hash(string $content) {
-        if ($this->config['endpoint'] === 'SYSTEMPAY') {
+    private function hash(string $content): string
+    {
+        if ($this->config['hash_mode'] === self::HASH_MODE_SHA1) {
             return sha1($content);
         }
 

@@ -2,4 +2,6 @@ Thumbs.db
 ehthumbs.db
 .DS_Store
 vendor
+cache
 composer.lock
+.phpunit.result.cache

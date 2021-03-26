@@ -17,9 +17,9 @@ class ApiRequestAction extends AbstractApiAction
     /**
      * @inheritdoc
      *
-     * @throws \Payum\Core\Reply\HttpRedirect
+     * @throws HttpRedirect
      */
-    public function execute($request)
+    public function execute($request): void
     {
         /** @var Request $request */
         RequestNotSupportedException::assertSupports($this, $request);
@@ -48,7 +48,7 @@ class ApiRequestAction extends AbstractApiAction
      *
      * @param array $data
      */
-    private function logRequestData(array $data)
+    private function logRequestData(array $data): void
     {
         $this->logData("[Payzen] Request", $data, [
             'vads_order_id',
@@ -64,9 +64,9 @@ class ApiRequestAction extends AbstractApiAction
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof Request
             && $request->getModel() instanceof \ArrayAccess;

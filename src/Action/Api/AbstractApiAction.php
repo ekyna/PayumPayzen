@@ -44,7 +44,7 @@ abstract class AbstractApiAction implements ActionInterface, GatewayAwareInterfa
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function setLogger(LoggerInterface $logger)
     {
@@ -56,7 +56,7 @@ abstract class AbstractApiAction implements ActionInterface, GatewayAwareInterfa
      *
      * @param string $message
      */
-    protected function log($message)
+    protected function log(string $message)
     {
         if (!$this->logger) {
             return;
@@ -72,7 +72,7 @@ abstract class AbstractApiAction implements ActionInterface, GatewayAwareInterfa
      * @param array  $data
      * @param array  $filterKeys
      */
-    protected function logData($message, array $data, array $filterKeys = [])
+    protected function logData(string $message, array $data, array $filterKeys = [])
     {
         if (!$this->logger) {
             return;
