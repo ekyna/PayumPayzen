@@ -16,7 +16,7 @@ class PayzenGatewayFactory extends GatewayFactory
     /**
      * Builds a new factory.
      *
-     * @param array                   $defaultConfig
+     * @param array                        $defaultConfig
      * @param GatewayFactoryInterface|null $coreGatewayFactory
      *
      * @return PayzenGatewayFactory
@@ -53,6 +53,7 @@ class PayzenGatewayFactory extends GatewayFactory
                 'ctx_mode'    => null,
                 'directory'   => null,
                 'endpoint'    => null,
+                'hash_mode'   => Api\Api::HASH_MODE_SHA256,
                 'debug'       => false,
             ];
 
@@ -69,6 +70,7 @@ class PayzenGatewayFactory extends GatewayFactory
                     'certificate' => $config['certificate'],
                     'ctx_mode'    => $config['ctx_mode'],
                     'directory'   => $config['directory'],
+                    'hash_mode'   => $config['hash_mode'],
                     'debug'       => $config['debug'],
                 ];
 
