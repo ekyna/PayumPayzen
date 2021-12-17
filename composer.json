@@ -22,7 +22,7 @@
     "require": {
         "php": "^7.1",
         "payum/core": "^1.5",
-        "php-http/guzzle6-adapter": "^1.1",
+        "php-http/guzzle6-adapter": "^1.1|^2.0",
         "symfony/options-resolver": "^3.0|^4.0|^5.0",
         "symfony/process": "^3.0|^4.0|^5.0",
         "psr/log": "^1.0"

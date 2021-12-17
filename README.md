@@ -21,6 +21,7 @@ $gateway = $factory->create([
     'site_id'     => '132456',
     'certificate' => '132456',
     'ctx_mode'    => Api::MODE_PRODUCTION,
+    'hash_mode'   => Api::HASH_MODE_SHA256,
     'directory'   => __DIR__ . '/payzen-cache',
 ]);
 
