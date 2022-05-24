@@ -22,6 +22,7 @@ class Api
 
     const ENDPOINT_SYSTEMPAY = 'SYSTEMPAY';
     const ENDPOINT_SCELLIUS  = 'SCELLIUS';
+    const ENDPOINT_CLICANDPAY = 'CLICANDPAY';
 
     /**
      * @var OptionsResolver
@@ -203,6 +204,7 @@ class Api
     private function getDirectoryPath(): string
     {
         $path = $this->config['directory'];
+
 
         // Create directory if not exists
         if (!is_dir($path)) {
@@ -466,7 +468,7 @@ class Api
 
     private function getEndPoints(): array
     {
-        return [null, self::ENDPOINT_SYSTEMPAY, self::ENDPOINT_SCELLIUS];
+        return [null, self::ENDPOINT_SYSTEMPAY, self::ENDPOINT_SCELLIUS, self::ENDPOINT_CLICANDPAY];
     }
 
     private function getHashModes(): array
@@ -482,6 +484,10 @@ class Api
 
         if (self::ENDPOINT_SCELLIUS === $this->config['endpoint']) {
             return 'https://scelliuspaiement.labanquepostale.fr/vads-payment/';
+        }
+
+        if (self::ENDPOINT_CLICANDPAY === $this->config['endpoint']) {
+            return 'https://clicandpay.groupecdn.fr/vads-payment/';
         }
 
         return 'https://secure.payzen.eu/vads-payment/';

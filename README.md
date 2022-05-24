@@ -1,7 +1,7 @@
 PayumPayzen
 ===========
 
-PayZen Payum Gateway (Systempay, Scellius)
+PayZen Payum Gateway (Systempay, Scellius, CLIC&PAY)
 
 [![Build](https://github.com/ekyna/PayumPayzen/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/ekyna/PayumPayzen/actions/workflows/build.yml)
 
