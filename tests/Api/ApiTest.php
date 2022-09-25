@@ -184,6 +184,19 @@ class ApiTest extends TestCase
             ],
             'https://scelliuspaiement.labanquepostale.fr/vads-payment/?vads_action_mode=INTERACTIVE&vads_page_action=PAYMENT&vads_payment_config=SINGLE&vads_return_mode=POST&vads_version=V2&vads_amount=1234&vads_currency=978&vads_trans_date=20200101120000&vads_trans_id=000001&vads_site_id=123456789&vads_ctx_mode=PRODUCTION&signature=p9TbeohlOZVPAmhEwfAlGxRJxFAKpNg5wYBSN9emuqs%3D',
         ];
+
+        yield [
+            [
+                'endpoint' => Api::ENDPOINT_OSB,
+            ],
+            [
+                'vads_amount'     => '1234',
+                'vads_currency'   => '978',
+                'vads_trans_date' => '20200101120000',
+                'vads_trans_id'   => '000001',
+            ],
+            'https://secure.osb.pf/vads-payment/?vads_action_mode=INTERACTIVE&vads_page_action=PAYMENT&vads_payment_config=SINGLE&vads_return_mode=POST&vads_version=V2&vads_amount=1234&vads_currency=978&vads_trans_date=20200101120000&vads_trans_id=000001&vads_site_id=123456789&vads_ctx_mode=PRODUCTION&signature=p9TbeohlOZVPAmhEwfAlGxRJxFAKpNg5wYBSN9emuqs%3D',
+        ];
     }
 
     /**

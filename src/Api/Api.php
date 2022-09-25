@@ -23,6 +23,7 @@ class Api
     const ENDPOINT_SYSTEMPAY = 'SYSTEMPAY';
     const ENDPOINT_SCELLIUS  = 'SCELLIUS';
     const ENDPOINT_CLICANDPAY = 'CLICANDPAY';
+    const ENDPOINT_OSB = 'OSB';
 
     /**
      * @var OptionsResolver
@@ -468,7 +469,7 @@ class Api
 
     private function getEndPoints(): array
     {
-        return [null, self::ENDPOINT_SYSTEMPAY, self::ENDPOINT_SCELLIUS, self::ENDPOINT_CLICANDPAY];
+        return [null, self::ENDPOINT_SYSTEMPAY, self::ENDPOINT_SCELLIUS, self::ENDPOINT_CLICANDPAY, self::ENDPOINT_OSB];
     }
 
     private function getHashModes(): array
@@ -488,6 +489,10 @@ class Api
 
         if (self::ENDPOINT_CLICANDPAY === $this->config['endpoint']) {
             return 'https://clicandpay.groupecdn.fr/vads-payment/';
+        }
+
+        if (self::ENDPOINT_OSB === $this->config['endpoint']) {
+            return 'https://secure.osb.pf/vads-payment/';
         }
 
         return 'https://secure.payzen.eu/vads-payment/';
