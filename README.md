@@ -23,7 +23,7 @@ $gateway = $factory->create([
     'ctx_mode'    => Api::MODE_PRODUCTION,
     'hash_mode'   => Api::HASH_MODE_SHA256,
     'directory'   => __DIR__ . '/payzen-cache',
-    'endpoint'.   => Api::ENDPOINT_SYSTEMPAY, // Or one of the constants : `Api::ENDPOINT_*`
+    'endpoint'    => Api::ENDPOINT_SYSTEMPAY, // default value, see `Api::ENDPOINT_*` constants for more
 ]);
 
 // Register your convert payment action
