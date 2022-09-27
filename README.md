@@ -1,7 +1,7 @@
 PayumPayzen
 ===========
 
-PayZen Payum Gateway (Systempay, Scellius, CLIC&PAY)
+PayZen Payum Gateway (Systempay, Scellius, CLIC&PAY, OSB)
 
 [![Build](https://github.com/ekyna/PayumPayzen/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/ekyna/PayumPayzen/actions/workflows/build.yml)
 
@@ -23,6 +23,7 @@ $gateway = $factory->create([
     'ctx_mode'    => Api::MODE_PRODUCTION,
     'hash_mode'   => Api::HASH_MODE_SHA256,
     'directory'   => __DIR__ . '/payzen-cache',
+    'endpoint'    => Api::ENDPOINT_SYSTEMPAY, // default value, see `Api::ENDPOINT_*` constants for more
 ]);
 
 // Register your convert payment action
