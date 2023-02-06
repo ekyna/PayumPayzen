@@ -482,7 +482,6 @@ class Api
 
     private function getUrl(): string
     {
-
         if ($this->config['endpoint_url'] !== null) {
             return $this->config['endpoint_url'];
         }
