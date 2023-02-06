@@ -259,7 +259,7 @@ class Api
             ->setAllowedTypes('certificate', 'string')
             ->setAllowedValues('ctx_mode', $this->getModes())
             ->setAllowedTypes('directory', 'string')
-            ->setAllowedTypes('endpoint_url', 'string')
+            ->setAllowedTypes('endpoint_url', ['null', 'string'])
             ->setAllowedValues('endpoint', $this->getEndPoints())
             ->setAllowedValues('hash_mode', $this->getHashModes())
             ->setAllowedTypes('debug', 'bool')
