@@ -48,13 +48,14 @@ class PayzenGatewayFactory extends GatewayFactory
 
         if (false == $config['payum.api']) {
             $config['payum.default_options'] = [
-                'site_id'     => null,
-                'certificate' => null,
-                'ctx_mode'    => null,
-                'directory'   => null,
-                'endpoint'    => null,
-                'hash_mode'   => Api\Api::HASH_MODE_SHA256,
-                'debug'       => false,
+                'site_id'      => null,
+                'certificate'  => null,
+                'ctx_mode'     => null,
+                'directory'    => null,
+                'endpoint'     => null,
+                'endpoint_url' => null,
+                'hash_mode'    => Api\Api::HASH_MODE_SHA256,
+                'debug'        => false,
             ];
 
             $config->defaults($config['payum.default_options']);
@@ -65,13 +66,14 @@ class PayzenGatewayFactory extends GatewayFactory
                 $config->validateNotEmpty($config['payum.required_options']);
 
                 $payzenConfig = [
-                    'endpoint'    => $config['endpoint'],
-                    'site_id'     => $config['site_id'],
-                    'certificate' => $config['certificate'],
-                    'ctx_mode'    => $config['ctx_mode'],
-                    'directory'   => $config['directory'],
-                    'hash_mode'   => $config['hash_mode'],
-                    'debug'       => $config['debug'],
+                    'endpoint'     => $config['endpoint'],
+                    'endpoint_url' => $config['endpoint_url'],
+                    'site_id'      => $config['site_id'],
+                    'certificate'  => $config['certificate'],
+                    'ctx_mode'     => $config['ctx_mode'],
+                    'directory'    => $config['directory'],
+                    'hash_mode'    => $config['hash_mode'],
+                    'debug'        => $config['debug'],
                 ];
 
                 $api = new Api\Api();

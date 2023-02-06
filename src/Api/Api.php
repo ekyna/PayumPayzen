@@ -21,6 +21,7 @@ class Api
     const HASH_MODE_SHA256 = 'SHA256';
 
     const ENDPOINT_SYSTEMPAY = 'SYSTEMPAY';
+    const ENDPOINT_SOGECOMMERCE = 'SOGECOMMERCE';
     const ENDPOINT_SCELLIUS  = 'SCELLIUS';
     const ENDPOINT_CLICANDPAY = 'CLICANDPAY';
     const ENDPOINT_OSB = 'OSB';
@@ -250,6 +251,7 @@ class Api
             ])
             ->setDefaults([
                 'endpoint'  => null,
+                'endpoint_url'  => null,
                 'hash_mode' => self::HASH_MODE_SHA256,
                 'debug'     => false,
             ])
@@ -257,6 +259,7 @@ class Api
             ->setAllowedTypes('certificate', 'string')
             ->setAllowedValues('ctx_mode', $this->getModes())
             ->setAllowedTypes('directory', 'string')
+            ->setAllowedTypes('endpoint_url', ['null', 'string'])
             ->setAllowedValues('endpoint', $this->getEndPoints())
             ->setAllowedValues('hash_mode', $this->getHashModes())
             ->setAllowedTypes('debug', 'bool')
@@ -469,7 +472,7 @@ class Api
 
     private function getEndPoints(): array
     {
-        return [null, self::ENDPOINT_SYSTEMPAY, self::ENDPOINT_SCELLIUS, self::ENDPOINT_CLICANDPAY, self::ENDPOINT_OSB];
+        return [null, self::ENDPOINT_SYSTEMPAY, self::ENDPOINT_SOGECOMMERCE, self::ENDPOINT_SCELLIUS, self::ENDPOINT_CLICANDPAY, self::ENDPOINT_OSB];
     }
 
     private function getHashModes(): array
@@ -479,6 +482,9 @@ class Api
 
     private function getUrl(): string
     {
+        if ($this->config['endpoint_url'] !== null) {
+            return $this->config['endpoint_url'];
+        }
         if (self::ENDPOINT_SYSTEMPAY === $this->config['endpoint']) {
             return 'https://paiement.systempay.fr/vads-payment/';
         }
@@ -493,6 +499,9 @@ class Api
 
         if (self::ENDPOINT_OSB === $this->config['endpoint']) {
             return 'https://secure.osb.pf/vads-payment/';
+        }
+        if (self::ENDPOINT_SOGECOMMERCE === $this->config['endpoint']) {
+            return 'https://sogecommerce.societegenerale.eu/vads-payment/';
         }
 
         return 'https://secure.payzen.eu/vads-payment/';
