@@ -53,6 +53,7 @@ class PayzenGatewayFactory extends GatewayFactory
                 'ctx_mode'    => null,
                 'directory'   => null,
                 'endpoint'    => null,
+                'endpoint_url'    => null,
                 'hash_mode'   => Api\Api::HASH_MODE_SHA256,
                 'debug'       => false,
             ];
@@ -66,6 +67,7 @@ class PayzenGatewayFactory extends GatewayFactory
 
                 $payzenConfig = [
                     'endpoint'    => $config['endpoint'],
+                    'endpoint_url'=> $config['endpoint_url'],
                     'site_id'     => $config['site_id'],
                     'certificate' => $config['certificate'],
                     'ctx_mode'    => $config['ctx_mode'],
