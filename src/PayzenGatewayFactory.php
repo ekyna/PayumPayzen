@@ -2,6 +2,8 @@
 
 namespace Ekyna\Component\Payum\Payzen;
 
+use Ekyna\Component\Payum\Payzen\Api\IdGeneratedByFile;
+use Ekyna\Component\Payum\Payzen\Api\TransactionIdInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
 use Payum\Core\GatewayFactoryInterface;
@@ -13,17 +15,28 @@ use Payum\Core\GatewayFactoryInterface;
  */
 class PayzenGatewayFactory extends GatewayFactory
 {
+    private $transactionId;
+
+    public function __construct(
+        array $defaultConfig = array(),
+        GatewayFactoryInterface $coreGatewayFactory = null,
+        TransactionIdInterface $transactionId = null
+    ) {
+        parent::__construct($defaultConfig, $coreGatewayFactory);
+        $this->transactionId = $transactionId ?? new IdGeneratedByFile($defaultConfig['directory'] ?? sys_get_temp_dir());
+    }
+
     /**
      * Builds a new factory.
      *
-     * @param array                        $defaultConfig
+     * @param array $defaultConfig
      * @param GatewayFactoryInterface|null $coreGatewayFactory
-     *
+     * @param TransactionIdInterface|null $transactionId
      * @return PayzenGatewayFactory
      */
-    public static function build(array $defaultConfig, GatewayFactoryInterface $coreGatewayFactory = null): PayzenGatewayFactory
+    public static function build(array $defaultConfig, GatewayFactoryInterface $coreGatewayFactory = null, TransactionIdInterface  $transactionId = null): PayzenGatewayFactory
     {
-        return new static($defaultConfig, $coreGatewayFactory);
+        return new static($defaultConfig, $coreGatewayFactory, $transactionId);
     }
 
     /**
@@ -42,7 +55,7 @@ class PayzenGatewayFactory extends GatewayFactory
             'payum.action.refund'          => new Action\RefundAction(),
             'payum.action.status'          => new Action\StatusAction(),
             'payum.action.notify'          => new Action\NotifyAction(),
-            'payum.action.api.request'     => new Action\Api\ApiRequestAction(),
+            'payum.action.api.request'     => new Action\Api\ApiRequestAction($this->transactionId),
             'payum.action.api.response'    => new Action\Api\ApiResponseAction(),
         ]);
 

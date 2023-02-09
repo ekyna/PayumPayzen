@@ -3,7 +3,6 @@
 namespace Ekyna\Component\Payum\Payzen\Api;
 
 use Payum\Core\Exception\LogicException;
-use Payum\Core\Exception\RuntimeException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -54,55 +53,9 @@ class Api
             ->resolve($config);
     }
 
-    /**
-     * Returns the next transaction id.
-     *
-     * @return string
-     */
-    public function getTransactionId(): string
+    public function getConfig(): array
     {
-        $path = $this->getDirectoryPath() . 'transaction_id';
-
-        // Create file if not exists
-        if (!file_exists($path)) {
-            touch($path);
-            chmod($path, 0600);
-        }
-
-        $date = (new \DateTime())->format('Ymd');
-        $fileDate = date('Ymd', filemtime($path));
-        $isDailyFirstAccess = ($date != $fileDate);
-
-        // Open file
-        $handle = fopen($path, 'r+');
-        if (false === $handle) {
-            throw new RuntimeException('Failed to open the transaction ID file.');
-        }
-        // Lock File
-        if (!flock($handle, LOCK_EX)) {
-            throw new RuntimeException('Failed to lock the transaction ID file.');
-        }
-
-        $id = 1;
-        // If not daily first access, read and increment the id
-        if (!$isDailyFirstAccess) {
-            $id = (int)fread($handle, 6);
-            $id++;
-        }
-
-        // Truncate, write, unlock and close.
-        fseek($handle, 0);
-        ftruncate($handle, 0);
-        fwrite($handle, (string)$id);
-        fflush($handle);
-        flock($handle, LOCK_UN);
-        fclose($handle);
-
-        if ($this->config['debug']) {
-            $id += 89000;
-        }
-
-        return str_pad($id, 6, '0', STR_PAD_LEFT);
+        return $this->config;
     }
 
     /**
@@ -196,26 +149,6 @@ class Api
         }
 
         return $content;
-    }
-
-    /**
-     * Returns the directory path and creates it if not exists.
-     *
-     * @return string
-     */
-    private function getDirectoryPath(): string
-    {
-        $path = $this->config['directory'];
-
-
-        // Create directory if not exists
-        if (!is_dir($path)) {
-            if (!mkdir($path, 0755, true)) {
-                throw new RuntimeException('Failed to create cache directory');
-            }
-        }
-
-        return $path . DIRECTORY_SEPARATOR;
     }
 
     /**
