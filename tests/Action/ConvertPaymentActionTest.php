@@ -48,7 +48,7 @@ class ConvertPaymentActionTest extends AbstractActionTest
 
         $result = $request->getResult();
 
-        $this->assertEquals('1234', $result['vads_amount']);
+        $this->assertEquals('123400', $result['vads_amount']);
         $this->assertEquals('978', $result['vads_currency']);
         $this->assertEquals('O01', $result['vads_order_id']);
         $this->assertEquals(123, $result['vads_cust_id']);

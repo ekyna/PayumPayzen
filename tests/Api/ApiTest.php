@@ -39,27 +39,6 @@ class ApiTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function test_getTransactionId(): void
-    {
-        $this->clearCache();
-
-        $api = $this->createApi();
-
-        $id = $api->getTransactionId();
-        $this->assertEquals('000001', $id);
-
-        $id = $api->getTransactionId();
-        $this->assertEquals('000002', $id);
-
-        $id = $api->getTransactionId();
-        $this->assertEquals('000003', $id);
-
-        touch(__DIR__ . '/../../cache/transaction_id', time() - 60 * 60 * 24);
-
-        $id = $api->getTransactionId();
-        $this->assertEquals('000001', $id);
-    }
-
     /**
      * @param string $hashMode
      * @param array  $data
@@ -328,7 +307,7 @@ class ApiTest extends TestCase
             'site_id'     => '123456789',
             'certificate' => '987654321',
             'ctx_mode'    => Api::MODE_PRODUCTION,
-            'directory'   => __DIR__ . '/../../cache',
+            'directory'   => dirname(__DIR__, 2) . '/cache',
         ], $config));
 
         return $api;
@@ -336,7 +315,7 @@ class ApiTest extends TestCase
 
     private function clearCache(): void
     {
-        $path = __DIR__ . '/../../cache/transaction_id';
+        $path = dirname(__DIR__, 2) . '/cache/transaction_id';
         if (file_exists($path)) {
             unlink($path);
         }

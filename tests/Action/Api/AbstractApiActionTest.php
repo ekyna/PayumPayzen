@@ -6,6 +6,9 @@ namespace Ekyna\Component\Payum\Payzen\Tests\Action\Api;
 
 use Ekyna\Component\Payum\Payzen\Action\Api\AbstractApiAction;
 use Ekyna\Component\Payum\Payzen\Api\Api;
+use Ekyna\Component\Payum\Payzen\Api\IdGeneratedByDate;
+use Ekyna\Component\Payum\Payzen\Api\IdGeneratedByFile;
+use Ekyna\Component\Payum\Payzen\Api\TransactionIdInterface;
 use Ekyna\Component\Payum\Payzen\Tests\Action\AbstractActionTest;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -21,9 +24,14 @@ abstract class AbstractApiActionTest extends AbstractActionTest
     /** @var MockObject|Api */
     protected $api;
 
+    /**
+     * @var MockObject|TransactionIdInterface
+     */
+    protected $transactionIdInterface;
+
     protected function setUp(): void
     {
-        $this->action = new $this->actionClass();
+        $this->action = new $this->actionClass($this->getIdGeneratedByFile());
         $this->action->setApi($this->getApiMock());
     }
 
@@ -36,12 +44,24 @@ abstract class AbstractApiActionTest extends AbstractActionTest
     /**
      * @return MockObject|Api
      */
-    protected function getApiMock(): MockObject
+    protected function getApiMock()
     {
         if ($this->api) {
             return $this->api;
         }
 
         return $this->api = $this->getMockBuilder(Api::class)->getMock();
+    }
+
+    /**
+     * @return TransactionIdInterface
+     */
+    protected function getIdGeneratedByFile()
+    {
+        if ($this->transactionIdInterface) {
+            return $this->transactionIdInterface;
+        }
+
+        return $this->transactionIdInterface = new IdGeneratedByFile(dirname(__DIR__, 3) . '/cache/');
     }
 }
