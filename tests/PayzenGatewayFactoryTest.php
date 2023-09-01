@@ -38,7 +38,7 @@ class PayzenGatewayFactoryTest extends TestCase
             'ctx_mode'    => Api::MODE_PRODUCTION,
             'site_id'     => '123456',
             'certificate' => '123456',
-            'directory'   => __DIR__ . '/../cache',
+            'directory'   => dirname(__DIR__, 1) . '/cache',
         ]);
 
         $this->assertInstanceOf('Payum\Core\Gateway', $gateway);

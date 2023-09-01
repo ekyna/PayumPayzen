@@ -36,24 +36,26 @@ class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
 
         $model = ArrayObject::ensureArrayObject($payment->getDetails());
 
-        if (false == $model['vads_amount']) {
+        if (!$model['vads_amount']) {
             $this->gateway->execute($currency = new GetCurrency($payment->getCurrencyCode()));
             if (2 < $currency->exp) {
                 throw new RuntimeException('Unexpected currency exp.');
             }
-            $divisor = pow(10, 2 - $currency->exp);
+            // $currecy->exp is the number of decimal required with this currency
+            $multiplier = pow(10, $currency->exp);
 
             $model['vads_currency'] = (string)$currency->numeric;
-            $model['vads_amount'] = (string)abs($payment->getTotalAmount() / $divisor);
+            // used to send a non-decimal value to the platform, it can be reverted with currency->exp who be known by Payzen
+            $model['vads_amount'] = (string)abs($payment->getTotalAmount() * $multiplier);
         }
 
-        if (false == $model['vads_order_id']) {
+        if (!$model['vads_order_id']) {
             $model['vads_order_id'] = $payment->getNumber();
         }
-        if (false == $model['vads_cust_id']) {
+        if (!$model['vads_cust_id']) {
             $model['vads_cust_id'] = $payment->getClientId();
         }
-        if (false == $model['vads_cust_email']) {
+        if (!$model['vads_cust_email']) {
             $model['vads_cust_email'] = $payment->getClientEmail();
         }
 
